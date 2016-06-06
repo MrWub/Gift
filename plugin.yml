@@ -1,0 +1,7 @@
+name: gift
+main: com.github.MrWub.gift.Gift
+version: 1.0
+commands: 
+  gift: 
+    description: gift plugin
+    usage: /gift help  查看命令帮助
