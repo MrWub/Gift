@@ -6,12 +6,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Isql {
 	private static Connection c = null;
-	private static Gift main;
 	public Isql(Gift gift) {
-		main = gift;
 	}
 
 	public boolean init() {
@@ -32,10 +31,10 @@ public class Isql {
 			Class.forName("com.mysql.jdbc.Driver");
 			c = DriverManager.getConnection(url);
 			if (!tableExists(MyConfig.tableName)) {
-				createTable(MyConfig.tableName,"num int not null,id text,amount text");
+				createTable(MyConfig.tableName,"gid int not null,id text,amount text");
 			}
 			if (!tableExists(MyConfig.itemTableName)) {
-				createTable(MyConfig.itemTableName,"id int not null,map text");
+				createTable(MyConfig.itemTableName,"iid int not null,map text");
 			}
 			return true;
 		} catch(Exception e) {
@@ -55,15 +54,21 @@ public class Isql {
 				+ ") CHARACTER SET utf8 COLLATE utf8_general_ci");
 	}
 	
-	public ArrayList<String> doSql(String cmd) {
-		ArrayList<String> result = new ArrayList<String>();
+	public HashMap<Integer,ArrayList<String>> doSql(String cmd) {
+		HashMap<Integer,ArrayList<String>> result = new HashMap<Integer,ArrayList<String>>();
+		ArrayList<String> tmp = new ArrayList<String>();
 	    Statement st = null;
 	    ResultSet res = null;
 	    try {
 	    	st = c.createStatement();
 	    	res = st.executeQuery(cmd);
+	    	int lt = res.getMetaData().getColumnCount();
 	    	while (res.next()) {
-	    		result.add(res.getString(1));
+	    		for (int i=1; i<=lt; i++) {
+	    			tmp = result.get(i);
+	    			tmp.add(res.getString(i));
+		    		result.replace(i,tmp);
+	    		}
 	    	};
 	    } catch(Exception e) {
 	    	e.printStackTrace();
@@ -79,16 +84,12 @@ public class Isql {
 	}
 	
 	private boolean tableExists(String tableName) {
-	    ArrayList<String> result = doSql("SHOW TABLES");
-	    for(String s:result) {
+		HashMap<Integer,ArrayList<String>> result = doSql("SHOW TABLES");
+	    for(String s:result.get(1)) {
 	    	if (s.equalsIgnoreCase(tableName))return true;
 	    }
 	    return false;
 	}
 
-	public boolean inTable(String itemTableName, String string) {
-		// TODO 自动生成的方法存根
-		return false;
-	}
 
 }
