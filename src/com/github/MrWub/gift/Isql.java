@@ -11,7 +11,7 @@ public class Isql {
 	private static Connection c = null;
 	public Isql(Gift gift) {
 	}
-
+	
 	public boolean init() {
 		String url=
 				"jdbc:mysql://"
@@ -48,12 +48,13 @@ public class Isql {
 		return false;
 	}
 	private void createTable(String tableName,String args) {
-		doSql("create table "+ MyConfig.tableName + " (" 
+		doSql("create table "+ tableName + " (" 
 				+ args
 				+ ") CHARACTER SET utf8 COLLATE utf8_general_ci");
 	}
 	
-	public Iresult doSql(String cmd) {
+	public Iresult doSqlQuery(String cmd) {
+		System.out.println(cmd);
 		Iresult result = null;
 	    Statement st = null;
 	    ResultSet res = null;
@@ -74,9 +75,26 @@ public class Isql {
 	    return result;
 	}
 	
+	public void doSql(String cmd) {
+		System.out.println(cmd);
+	    Statement st = null;
+	    try {
+	    	st = c.createStatement();
+	    	st.execute(cmd);
+	    } catch(Exception e) {
+	    	e.printStackTrace();
+	    } finally {
+	    	try {
+				if ((st != null) && (!st.isClosed())) st.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+	    }
+	}
 	private boolean tableExists(String tableName) {
-		Iresult result = doSql("SHOW TABLES");
+		Iresult result = doSqlQuery("SHOW TABLES");
 	    for(ArrayList<String> s:result.getAllTable()) {
+	    	if (s.isEmpty()) continue;
 	    	if (s.get(1).equalsIgnoreCase(tableName))return true;
 	    }
 	    return false;

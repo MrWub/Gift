@@ -5,10 +5,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class Iresult {
-	private ArrayList<ArrayList<String>> list = new ArrayList<ArrayList<String>>();
+	private ArrayList<ArrayList<String>> list = new ArrayList<ArrayList<String>>(),
+										 ho = new ArrayList<ArrayList<String>>();
+	@SuppressWarnings("unchecked")
 	public Iresult(ResultSet res) {
 		list.add(new ArrayList<String>());
+		ho.add(new ArrayList<String>());
 		try {
+			if (res.isAfterLast()) return;
 			ArrayList<String> tmp = new ArrayList<String>();
 			while (res.next()) {
 				tmp.clear();
@@ -16,8 +20,8 @@ public class Iresult {
 				for (int i=1; i<=res.getMetaData().getColumnCount(); i++) {
 					tmp.add(res.getString(i));
 				}
-				list.add(tmp);
-			}
+				list.add((ArrayList<String>)tmp.clone());
+			};
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

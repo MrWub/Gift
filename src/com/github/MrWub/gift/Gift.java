@@ -29,12 +29,14 @@ public class Gift extends JavaPlugin {
 		if (config.load()) info("Loading config... OK!"); else {
 			info("Loading config... Error! Disable!");
 			getServer().getPluginManager().disablePlugin(this);
+			return;
 		}
 		
 		sql=new Isql(this);
 		if (sql.init())info("Loading SQL... "); else {
 			info("Loading SQL... Error! Disable!");
 			getServer().getPluginManager().disablePlugin(this);
+			return;
 		}
 		info("Loading Items... ");
 		initItems();
@@ -43,7 +45,7 @@ public class Gift extends JavaPlugin {
 		if(!getDataFolder().exists()) getDataFolder().mkdir(); 
 	}
 	private void initItems() {
-		Iresult result = sql.doSql("SELECT * FROM " + MyConfig.itemTableName);
+		Iresult result = sql.doSqlQuery("SELECT * FROM " + MyConfig.itemTableName);
 		int max = 0;
 		for (int i = 1; i<=result.getRowCount(); i++) {
 			ArrayList<String> row = result.getRow(i);
@@ -56,7 +58,7 @@ public class Gift extends JavaPlugin {
 	}
 	
 	private void initGifts() {
-		Iresult result = sql.doSql("SELECT * FROM " + MyConfig.tableName);
+		Iresult result = sql.doSqlQuery("SELECT * FROM " + MyConfig.tableName);
 		for (int i = 1; i<=result.getRowCount(); i++) {
 			ArrayList<String> row = result.getRow(i);
 			String name = row.get(1);
@@ -95,9 +97,9 @@ public class Gift extends JavaPlugin {
 					if (sender.hasPermission("gift.admin")) {
 						if (sender instanceof Player) {
 							Player p = (Player)sender;
-							ArrayList<Integer> tmp = new ArrayList<>();
+							ArrayList<Integer> tmp = new ArrayList<Integer>();
 							for (ItemStack item:p.getInventory()) {
-								tmp.add(addItem(item));
+								if (item != null) tmp.add(addItem(item));
 							}
 							addGifts(args[1], tmp);
 							p.sendMessage("成功创建礼包 " + args[1]);
@@ -115,7 +117,7 @@ public class Gift extends JavaPlugin {
 						}else sender.sendMessage("控制台不支持");
 					}else sender.sendMessage("无权操作");
 				}
-				if (args[1].equalsIgnoreCase("del")) {
+				if (args[0].equalsIgnoreCase("del")) {
 					if (sender.hasPermission("gift.admin")) {
 						if (gifts.containsKey(args[1])) {
 							delGifts(args[1]);
@@ -170,8 +172,8 @@ public class Gift extends JavaPlugin {
 				  + ")"
 				  + "VALUES"
 				  + "("
-				  + name + ","
-				  + goodIds
+				  + "'" + name + "'" + ","
+				  + "'" + goodIds + "'"
 				  + ")");
 	}
 	private int addItem(ItemStack item) {
@@ -184,7 +186,7 @@ public class Gift extends JavaPlugin {
 				  + "VALUES"
 				  + "("
 				  + itemSize + ","
-				  + Idecode.doZip(item)
+				  + "'" + Idecode.doZip(item) + "'" 
 				  + ")");
 		return itemSize;
 	}
