@@ -108,6 +108,10 @@ public class Gift extends JavaPlugin {
 		}
 		return false;
 	}
+	private void delGifts(String name) {
+		gifts.remove(name);
+		sql.doSql("DELETE FROM gifts WHERE giftname=" + name);
+	}
 	private void addGifts(String name, ArrayList<Integer> goods) {
 		gifts.put(name, goods);
 		String goodIds = "";
@@ -139,6 +143,9 @@ public class Gift extends JavaPlugin {
 				  + ")");
 		return itemSize;
 	}
-
+	private void delItem(int id) {
+		items.remove(id);
+		sql.doSql("DELETE FROM items WHERE id=" + id);
+	}
 	
 }
