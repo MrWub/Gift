@@ -1,12 +1,11 @@
 package com.github.MrWub.gift;
 
-import java.sql.DriverManager;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class Isql {
 	private static Connection c = null;
@@ -31,7 +30,7 @@ public class Isql {
 			Class.forName("com.mysql.jdbc.Driver");
 			c = DriverManager.getConnection(url);
 			if (!tableExists(MyConfig.tableName)) {
-				createTable(MyConfig.tableName,"giftname text not null,id text,amount text");
+				createTable(MyConfig.tableName,"giftname text not null,id text");
 			}
 			if (!tableExists(MyConfig.itemTableName)) {
 				createTable(MyConfig.itemTableName,"id int not null,map text");

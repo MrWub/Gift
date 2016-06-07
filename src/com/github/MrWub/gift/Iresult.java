@@ -10,9 +10,7 @@ public class Iresult {
 		list.add(new ArrayList<String>());
 		try {
 			ArrayList<String> tmp = new ArrayList<String>();
-			int row = 0;
 			while (res.next()) {
-				row++;
 				tmp.clear();
 				tmp.add(new String());
 				for (int i=1; i<=res.getMetaData().getColumnCount(); i++) {
