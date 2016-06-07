@@ -54,7 +54,6 @@ public class Isql {
 	}
 	
 	public Iresult doSqlQuery(String cmd) {
-		System.out.println(cmd);
 		Iresult result = null;
 	    Statement st = null;
 	    ResultSet res = null;
@@ -76,7 +75,6 @@ public class Isql {
 	}
 	
 	public void doSql(String cmd) {
-		System.out.println(cmd);
 	    Statement st = null;
 	    try {
 	    	st = c.createStatement();
