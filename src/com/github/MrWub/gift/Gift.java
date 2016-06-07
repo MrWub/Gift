@@ -1,18 +1,11 @@
 package com.github.MrWub.gift;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -22,14 +15,14 @@ public class Gift extends JavaPlugin {
 	public MyConfig config;
 	public Isql sql;
 	public int itemSize, giftsSize;
-	private ArrayList<ItemStack> im = new ArrayList<ItemStack>();
-	private ArrayList<Map<Integer,Integer>> gifts = new ArrayList<Map<Integer,Integer>> ();
+	private Map<Integer,ItemStack> items = new HashMap<Integer,ItemStack>();
+	private Map<String, Map<Integer,Integer>> gifts = new HashMap<String, Map<Integer,Integer>>();
+	//<名字，<myid，数量>>
 	public void info(String s) {
 		getLogger().info(s);
 	}
 	@Override
 	public void onEnable() {
-		info("gift is enable!");
 		MyConfig config = new MyConfig(this);
 		if (config.load()) info("Loading config... OK!"); else {
 			info("Loading config... Error! Disable!");
@@ -49,35 +42,27 @@ public class Gift extends JavaPlugin {
 	}
 	
 	private void initItems() {
-		HashMap<Integer,ArrayList<String>> result = 
-				sql.doSql("SELECT * FROM"
-				+ MyConfig.itemTableName
-				+" WHERE iid>0");
-		ArrayList<String> l = result.get(1);
-		ArrayList<String> imbyte = result.get(2);
-		int i=0;
-		for (String s:imbyte) {
-			i++;
-			im.set(Integer.valueOf(l.get(i)),Idecode.redo(s));
+		Iresult result = sql.doSql("SELECT * FROM " + MyConfig.itemTableName);
+		for (int i = 1; i<=result.getRowCount(); i++) {
+			items.put(Integer.valueOf(result.getRow(1).get(1)),Idecode.redo(result.getRow(i).get(2)));
 		}
-		itemSize = i;
 	}
 	
 	private void initGifts() {
-		HashMap<Integer,ArrayList<String>> result = new HashMap<Integer,ArrayList<String>>();
-		ArrayList<String> g = result.get(2);
-		ArrayList<String> cnt = result.get(3);
-		Map<Integer,Integer> map = new HashMap<Integer,Integer>();
-		for (int i = 0; i<g.size(); i++) {
-			map.clear();
-			String[] id = g.get(i).split(","), count = cnt.get(i).split(",");
-			for (int j = 0; j<id.length; j++) {
-				map.put(Integer.valueOf(id[j]), Integer.valueOf(count[j]));
+		Iresult result = sql.doSql("SELECT * FROM " + MyConfig.tableName);
+		for (int i = 1; i<=result.getRowCount(); i++) {
+			ArrayList<String> row = result.getRow(i);
+			String name = row.get(1);
+			String[] id = row.get(2).split(",");
+			String[] amount = row.get(3).split(",");
+			int j = 0;
+			Map<Integer,Integer> map = new HashMap<Integer,Integer>();
+			for(String s:id) {
+				map.put(Integer.valueOf(s), Integer.valueOf(amount[j]));
+				j++;
 			}
-			map.put(0, i);
-			gifts.add(map);
+			gifts.put(name, map);
 		}
-		giftsSize = g.size();
 	}
 	
 	public boolean onCommand(CommandSender sender,Command cmd,String label,String[] args) {
@@ -87,21 +72,15 @@ public class Gift extends JavaPlugin {
 				if (args[1].equalsIgnoreCase("help")) {
 					String[] strs ={"gift命令帮助",
 									"/gift list 查看礼包列表 需要权限gift.admin",
-									"/gift get X 获取X号礼包 需要权限gift.admin",
-									"/gift del X 删除X号礼包 需要权限gift.admin",
-									"/gift additem X Y 将手上的东西*Y增加至X号礼包 需要权限gift.admin",
-									"/gift delitem X Y 将从第X号礼包中减掉Y个你手上的东西，不足则减为0 需要权限gift.admin",
-									"/gift all-add 用你背包里的所有物品创建一个新礼包 需要权限gift.admin"};
+									"/gift get X 获取礼包X 需要权限gift.admin或gift.get.X",
+									"/gift del X 删除礼包X 需要权限gift.admin",
+									"/gift all-add 用你背包里的所有物品创建一个新礼包 需要权限gift.admin",
+									"/gift give X Y 给X玩家一个Y礼包 需要权限gift.admin"};
 					sender.sendMessage(strs);
 				} else 
 				if (args[1].equalsIgnoreCase("list")) {
-					for (Map<Integer,Integer> map:gifts) {
-						sender.sendMessage("===礼包"+map.get(0));
-						String msg = "";
-						for (int x:map.keySet()) {
-							msg = msg + im.get(x).getItemMeta().getDisplayName()+"*"+map.get(x)+"  ";
-						}
-						sender.sendMessage(msg);
+					for (String key:gifts.keySet()) {
+						sender.sendMessage(key);
 					}
 				}
 			}

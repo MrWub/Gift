@@ -31,10 +31,10 @@ public class Isql {
 			Class.forName("com.mysql.jdbc.Driver");
 			c = DriverManager.getConnection(url);
 			if (!tableExists(MyConfig.tableName)) {
-				createTable(MyConfig.tableName,"gid int not null,id text,amount text");
+				createTable(MyConfig.tableName,"giftname text not null,id text,amount text");
 			}
 			if (!tableExists(MyConfig.itemTableName)) {
-				createTable(MyConfig.itemTableName,"iid int not null,map text");
+				createTable(MyConfig.itemTableName,"id int not null,map text");
 			}
 			return true;
 		} catch(Exception e) {
@@ -54,22 +54,14 @@ public class Isql {
 				+ ") CHARACTER SET utf8 COLLATE utf8_general_ci");
 	}
 	
-	public HashMap<Integer,ArrayList<String>> doSql(String cmd) {
-		HashMap<Integer,ArrayList<String>> result = new HashMap<Integer,ArrayList<String>>();
-		ArrayList<String> tmp = new ArrayList<String>();
+	public Iresult doSql(String cmd) {
+		Iresult result = null;
 	    Statement st = null;
 	    ResultSet res = null;
 	    try {
 	    	st = c.createStatement();
 	    	res = st.executeQuery(cmd);
-	    	int lt = res.getMetaData().getColumnCount();
-	    	while (res.next()) {
-	    		for (int i=1; i<=lt; i++) {
-	    			tmp = result.get(i);
-	    			tmp.add(res.getString(i));
-		    		result.replace(i,tmp);
-	    		}
-	    	};
+	    	result = new Iresult(res);
 	    } catch(Exception e) {
 	    	e.printStackTrace();
 	    } finally {
@@ -84,9 +76,9 @@ public class Isql {
 	}
 	
 	private boolean tableExists(String tableName) {
-		HashMap<Integer,ArrayList<String>> result = doSql("SHOW TABLES");
-	    for(String s:result.get(1)) {
-	    	if (s.equalsIgnoreCase(tableName))return true;
+		Iresult result = doSql("SHOW TABLES");
+	    for(ArrayList<String> s:result.getAllTable()) {
+	    	if (s.get(1).equalsIgnoreCase(tableName))return true;
 	    }
 	    return false;
 	}
