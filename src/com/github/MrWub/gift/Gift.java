@@ -151,6 +151,9 @@ public class Gift extends JavaPlugin {
 		
 	}
 	private void delGifts(String name) {
+		for (int a:gifts.get(name)) {
+			delItem(a);
+		}
 		gifts.remove(name);
 		sql.doSql("DELETE FROM gifts WHERE giftname=" + name);
 	}
