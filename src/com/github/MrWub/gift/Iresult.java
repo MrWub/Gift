@@ -7,8 +7,10 @@ import java.util.ArrayList;
 public class Iresult {
 	private ArrayList<ArrayList<String>> list = new ArrayList<ArrayList<String>>(),
 										 ho = new ArrayList<ArrayList<String>>();
+	private ResultSet res;
 	@SuppressWarnings("unchecked")
 	public Iresult(ResultSet res) {
+		this.res=res;
 		list.add(new ArrayList<String>());
 		ho.add(new ArrayList<String>());
 		try {
@@ -34,5 +36,9 @@ public class Iresult {
 	}
 	public ArrayList<String> getRow(int row){
 		return list.get(row);
+	}
+	
+	public ResultSet getResultSet() {
+		return res;
 	}
 }

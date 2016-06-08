@@ -19,7 +19,6 @@ public class Gift extends JavaPlugin {
 	public int itemSize, giftsSize;
 	private Map<Integer,ItemStack> items = new HashMap<Integer,ItemStack>();
 	private Map<String, ArrayList<Integer>> gifts = new HashMap<String, ArrayList<Integer>>();
-	//<Ãû×Ö£¬<myid£¬ÊýÁ¿>>
 	public void info(String s) {
 		getLogger().info(s);
 	}
@@ -181,7 +180,7 @@ public class Gift extends JavaPlugin {
 		sql.doSql("INSERT INTO "+MyConfig.itemTableName 
 				  + "("
 				  + "`id`,"
-				  + "`map`"
+				  + "`data`"
 				  + ")"
 				  + "VALUES"
 				  + "("

@@ -33,7 +33,7 @@ public class Isql {
 				createTable(MyConfig.tableName,"giftname text not null,id text");
 			}
 			if (!tableExists(MyConfig.itemTableName)) {
-				createTable(MyConfig.itemTableName,"id int not null,map text");
+				createTable(MyConfig.itemTableName,"id int not null,data text");
 			}
 			return true;
 		} catch(Exception e) {
