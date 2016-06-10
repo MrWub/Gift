@@ -60,6 +60,7 @@ public class Idecode {
 			Map<String, Object> map = item.serialize();
 			JSONObject jobj = JSONObject.fromObject(map);
 			rs.put("item" + i, jobj.toString());
+			i++;
 		}
 		return rs.toString();
 	}
