@@ -72,7 +72,7 @@ public class Gift extends JavaPlugin {
 	
 	public boolean onCommand(CommandSender sender,Command cmd,String label,String[] args) {
 		if (label.equalsIgnoreCase("gift")) {
-			if (args.length == 0) return false;
+			if (args.length == 0) return false; else 
 			if (args.length == 1) {
 				if (args[0].equalsIgnoreCase("help")) {
 					String[] strs ={"gift命令帮助",
@@ -82,6 +82,7 @@ public class Gift extends JavaPlugin {
 									"/gift all-add X用你背包里的所有物品创建一个X礼包 需要权限gift.admin",
 									"/gift give X Y 给X玩家一个Y礼包 需要权限gift.admin"};
 					sender.sendMessage(strs);
+					return true;
 				} else 
 				if (args[0].equalsIgnoreCase("list")) {
 					if (sender.hasPermission("gift.admin")) {
@@ -89,8 +90,9 @@ public class Gift extends JavaPlugin {
 							sender.sendMessage(key);
 						}
 					} else sender.sendMessage("无权操作");
+					return true;
 				}
-			}
+			} else 
 			if (args.length == 2) {
 				if (args[0].equals("all-add")) {
 					if (sender.hasPermission("gift.admin")) {
@@ -105,6 +107,7 @@ public class Gift extends JavaPlugin {
 							
 						} else info("控制台不支持");
 					} else sender.sendMessage("无权操作");
+					return true;
 				} else 
 				if (args[0].equalsIgnoreCase("get")) {
 					if (sender.hasPermission("gift.admin") || sender.hasPermission("gift.get."+args[1])){
@@ -115,6 +118,7 @@ public class Gift extends JavaPlugin {
 							 } else sender.sendMessage("礼包不存在");
 						}else sender.sendMessage("控制台不支持");
 					}else sender.sendMessage("无权操作");
+					return true;
 				}
 				if (args[0].equalsIgnoreCase("del")) {
 					if (sender.hasPermission("gift.admin")) {
@@ -123,8 +127,9 @@ public class Gift extends JavaPlugin {
 							sender.sendMessage("已删除礼包" + args[1]);
 						} else sender.sendMessage("礼包不存在");
 					} else sender.sendMessage("无权操作");
+					return true;
 				}
-			}
+			} else 
 			if (args.length == 3) {
 				if (args[0].equalsIgnoreCase("give")) {
 					if (sender.hasPermission("gift.admin")) {
@@ -136,10 +141,11 @@ public class Gift extends JavaPlugin {
 							} else sender.sendMessage("礼包不存在");
 						} else sender.sendMessage("玩家不存在或不在线");
 					} else sender.sendMessage("无权操作");
+					return true;
 				}
 			}
 		}
-		return true;
+		return false;
 	}
 	private void giveGift(Player p, String name) {
 		 p.sendMessage("获得礼包 " + name);
