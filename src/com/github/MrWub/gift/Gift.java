@@ -2,6 +2,7 @@ package com.github.MrWub.gift;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -17,7 +18,7 @@ public class Gift extends JavaPlugin {
 	public MyConfig config;
 	public Isql sql;
 	public int itemSize, giftsSize;
-	private Map<String, ItemStack[]> gifts = new HashMap<String, ItemStack[]>();
+	private Map<String, List<ItemStack>> gifts = new HashMap<String, List<ItemStack>>();
 	public void info(String s) {
 		getLogger().info(s);
 	}
@@ -77,11 +78,9 @@ public class Gift extends JavaPlugin {
 					if (sender.hasPermission("gift.admin")) {
 						if (sender instanceof Player) {
 							Player p = (Player)sender;
-							ItemStack[] tmp = new ItemStack[100];
-							int i = 0;
+							List<ItemStack> tmp = new ArrayList<ItemStack>();
 							for (ItemStack item:p.getInventory()) {
-								if (item != null) tmp[i]=item;
-								i++;
+								if (item != null) tmp.add(item);
 							}
 							addGifts(args[1], tmp);
 							p.sendMessage("成功创建礼包 " + args[1]);
@@ -141,7 +140,7 @@ public class Gift extends JavaPlugin {
 		gifts.remove(name);
 		sql.doSql("DELETE FROM gifts WHERE giftname=" + name);
 	}
-	private void addGifts(String name, ItemStack[] goods) {
+	private void addGifts(String name, List<ItemStack> goods) {
 		gifts.put(name, goods);
 		String json = Idecode.doZip(goods);
 		sql.doSql("INSERT INTO "+MyConfig.tableName 

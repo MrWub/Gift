@@ -1,13 +1,17 @@
 package com.github.MrWub.gift;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
 import net.sf.json.JSONObject;
+
 import org.bukkit.inventory.ItemStack;
 
 public class Idecode {
 
-	public static ItemStack[] redo(String json) {
+	public static List<ItemStack> redo(String json) {
 	    /*byte[] data = Base64.getMimeDecoder().decode(imbyte);
 		
 		BukkitObjectInputStream ins = null;
@@ -26,9 +30,8 @@ public class Idecode {
 			e.printStackTrace();
 		}
 		return im;*/
-		ItemStack[] rs = new ItemStack[100];
+		List<ItemStack> rs = new ArrayList<ItemStack>();
     	JSONObject jobj = JSONObject.fromObject(json);
-    	int size = 0;
 		for (Object i : jobj.keySet()) {
 			JSONObject itemJobj = JSONObject.fromObject(jobj.get(i));
 			Map<String, Object> map = new HashMap<String, Object>();
@@ -36,13 +39,12 @@ public class Idecode {
 	    		String str = s.toString();
 	    		map.put(str, itemJobj.get(s));
 	    	}
-	    	rs[size] = ItemStack.deserialize(map);
-	    	size++;
+	    	rs.add(ItemStack.deserialize(map));
 		}
 		return rs;
 	}
 	
-	public static String doZip(ItemStack[] items) {
+	public static String doZip(List<ItemStack> items) {
 		/*ByteArrayOutputStream bop = new ByteArrayOutputStream();
 		try {
 			BukkitObjectOutputStream out = new BukkitObjectOutputStream(bop);
