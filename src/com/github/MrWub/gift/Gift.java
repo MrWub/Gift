@@ -17,8 +17,7 @@ public class Gift extends JavaPlugin {
 	public MyConfig config;
 	public Isql sql;
 	public int itemSize, giftsSize;
-	private Map<Integer,ItemStack> items = new HashMap<Integer,ItemStack>();
-	private Map<String, ArrayList<Integer>> gifts = new HashMap<String, ArrayList<Integer>>();
+	private Map<String, ItemStack[]> gifts = new HashMap<String, ItemStack[]>();
 	public void info(String s) {
 		getLogger().info(s);
 	}
@@ -37,36 +36,16 @@ public class Gift extends JavaPlugin {
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
-		info("Loading Items... ");
-		initItems();
 		info("Loading Gifts... ");
 		initGifts(); 
 		if(!getDataFolder().exists()) getDataFolder().mkdir(); 
-	}
-	private void initItems() {
-		Iresult result = sql.doSqlQuery("SELECT * FROM " + MyConfig.itemTableName);
-		int max = 0;
-		for (int i = 1; i<=result.getRowCount(); i++) {
-			ArrayList<String> row = result.getRow(i);
-			items.put(Integer.valueOf(row.get(1)),Idecode.redo(row.get(2)));
-			if (max<Integer.valueOf(row.get(1))) {
-				max = Integer.valueOf(row.get(1));
-			}
-		}
-		itemSize = max;
 	}
 	
 	private void initGifts() {
 		Iresult result = sql.doSqlQuery("SELECT * FROM " + MyConfig.tableName);
 		for (int i = 1; i<=result.getRowCount(); i++) {
 			ArrayList<String> row = result.getRow(i);
-			String name = row.get(1);
-			String[] id = row.get(2).split(",");
-			ArrayList<Integer> tmp = new ArrayList<Integer>();
-			for(String s:id) {
-				tmp.add(Integer.valueOf(s));
-			}
-			gifts.put(name, tmp);
+			gifts.put(row.get(1), Idecode.redo(row.get(2)));
 		}
 	}
 	
@@ -98,13 +77,14 @@ public class Gift extends JavaPlugin {
 					if (sender.hasPermission("gift.admin")) {
 						if (sender instanceof Player) {
 							Player p = (Player)sender;
-							ArrayList<Integer> tmp = new ArrayList<Integer>();
+							ItemStack[] tmp = new ItemStack[100];
+							int i = 0;
 							for (ItemStack item:p.getInventory()) {
-								if (item != null) tmp.add(addItem(item));
+								if (item != null) tmp[i]=item;
+								i++;
 							}
 							addGifts(args[1], tmp);
 							p.sendMessage("成功创建礼包 " + args[1]);
-							
 						} else info("控制台不支持");
 					} else sender.sendMessage("无权操作");
 					return true;
@@ -149,55 +129,31 @@ public class Gift extends JavaPlugin {
 	}
 	private void giveGift(Player p, String name) {
 		 p.sendMessage("获得礼包 " + name);
-		 for (int id:gifts.get(name)) {
-			 if (!(p.getInventory().addItem(items.get(id))).isEmpty()) {
+		 for (ItemStack item:gifts.get(name)) {
+			 if (!(p.getInventory().addItem(item).isEmpty())) {
 				p.sendMessage("背包空间不足，物品掉落在地");
-				p.getWorld().dropItem(p.getLocation(), items.get(id));
+				p.getWorld().dropItem(p.getLocation(), item);
 			 };
 		 }
 		
 	}
 	private void delGifts(String name) {
-		for (int a:gifts.get(name)) {
-			delItem(a);
-		}
 		gifts.remove(name);
 		sql.doSql("DELETE FROM gifts WHERE giftname=" + name);
 	}
-	private void addGifts(String name, ArrayList<Integer> goods) {
+	private void addGifts(String name, ItemStack[] goods) {
 		gifts.put(name, goods);
-		String goodIds = "";
-		for (int i:goods) {
-			goodIds = goodIds + i + ",";
-		}
+		String json = Idecode.doZip(goods);
 		sql.doSql("INSERT INTO "+MyConfig.tableName 
 				  + "("
 				  + "`giftname`,"
-				  + "`id`"
+				  + "`json`"
 				  + ")"
 				  + "VALUES"
 				  + "("
 				  + "'" + name + "'" + ","
-				  + "'" + goodIds + "'"
+				  + "'" + json + "'"
 				  + ")");
-	}
-	private int addItem(ItemStack item) {
-		items.put(++itemSize, item);
-		sql.doSql("INSERT INTO "+MyConfig.itemTableName 
-				  + "("
-				  + "`id`,"
-				  + "`data`"
-				  + ")"
-				  + "VALUES"
-				  + "("
-				  + itemSize + ","
-				  + "'" + Idecode.doZip(item) + "'" 
-				  + ")");
-		return itemSize;
-	}
-	private void delItem(int id) {
-		items.remove(id);
-		sql.doSql("DELETE FROM items WHERE id=" + id);
 	}
 	
 }

@@ -30,10 +30,7 @@ public class Isql {
 			Class.forName("com.mysql.jdbc.Driver");
 			c = DriverManager.getConnection(url);
 			if (!tableExists(MyConfig.tableName)) {
-				createTable(MyConfig.tableName,"giftname text not null,id text");
-			}
-			if (!tableExists(MyConfig.itemTableName)) {
-				createTable(MyConfig.itemTableName,"id int not null,data text");
+				createTable(MyConfig.tableName,"giftname text not null,json text");
 			}
 			return true;
 		} catch(Exception e) {

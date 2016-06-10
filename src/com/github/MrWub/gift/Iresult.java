@@ -5,14 +5,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class Iresult {
-	private ArrayList<ArrayList<String>> list = new ArrayList<ArrayList<String>>(),
-										 ho = new ArrayList<ArrayList<String>>();
+	private ArrayList<ArrayList<String>> list = new ArrayList<ArrayList<String>>();
 	private ResultSet res;
 	@SuppressWarnings("unchecked")
 	public Iresult(ResultSet res) {
 		this.res=res;
 		list.add(new ArrayList<String>());
-		ho.add(new ArrayList<String>());
 		try {
 			if (res.isAfterLast()) return;
 			ArrayList<String> tmp = new ArrayList<String>();

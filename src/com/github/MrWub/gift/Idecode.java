@@ -1,21 +1,13 @@
 package com.github.MrWub.gift;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-
-import net.minecraft.util.com.google.gson.JsonObject;
 import net.sf.json.JSONObject;
-
 import org.bukkit.inventory.ItemStack;
 
 public class Idecode {
 
-	public static ItemStack redo(String json) {
-		
+	public static ItemStack[] redo(String json) {
 	    /*byte[] data = Base64.getMimeDecoder().decode(imbyte);
 		
 		BukkitObjectInputStream ins = null;
@@ -34,16 +26,23 @@ public class Idecode {
 			e.printStackTrace();
 		}
 		return im;*/
-		Map<String, Object> map = new HashMap<String, Object>();
+		ItemStack[] rs = new ItemStack[100];
     	JSONObject jobj = JSONObject.fromObject(json);
-    	for (Object s : jobj.keySet()) {
-    		String str = s.toString();
-    		map.put(str, jobj.get(s));
-    	}
-    	return ItemStack.deserialize(map);
+    	int size = 0;
+		for (Object i : jobj.keySet()) {
+			JSONObject itemJobj = JSONObject.fromObject(jobj.get(i));
+			Map<String, Object> map = new HashMap<String, Object>();
+	    	for (Object s : itemJobj.keySet()) {
+	    		String str = s.toString();
+	    		map.put(str, itemJobj.get(s));
+	    	}
+	    	rs[size] = ItemStack.deserialize(map);
+	    	size++;
+		}
+		return rs;
 	}
 	
-	public static String doZip(ItemStack item) {
+	public static String doZip(ItemStack[] items) {
 		/*ByteArrayOutputStream bop = new ByteArrayOutputStream();
 		try {
 			BukkitObjectOutputStream out = new BukkitObjectOutputStream(bop);
@@ -55,9 +54,14 @@ public class Idecode {
 
 		byte[] data = bop.toByteArray();
 		return Base64.getMimeEncoder().encodeToString(data);*/
-		Map<String, Object> map = item.serialize();
-		JSONObject jobj = JSONObject.fromObject(map);
-		return jobj.toString();
+		JSONObject rs = new JSONObject();
+		int i = 0;
+		for (ItemStack item : items) {
+			Map<String, Object> map = item.serialize();
+			JSONObject jobj = JSONObject.fromObject(map);
+			rs.put("item" + i, jobj.toString());
+		}
+		return rs.toString();
 	}
 
 }
