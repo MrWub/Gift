@@ -29,6 +29,4 @@ public class MyConfig {
 		}
 		return true;
 	}
-
-
 }

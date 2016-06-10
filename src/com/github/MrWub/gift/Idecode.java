@@ -4,15 +4,19 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
+
+import net.minecraft.util.com.google.gson.JsonObject;
+import net.sf.json.JSONObject;
 
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.io.BukkitObjectInputStream;
-import org.bukkit.util.io.BukkitObjectOutputStream;
 
 public class Idecode {
 
-	public static ItemStack redo(String imbyte) {
-		byte[] data = Base64.getMimeDecoder().decode(imbyte);
+	public static ItemStack redo(String json) {
+		
+	    /*byte[] data = Base64.getMimeDecoder().decode(imbyte);
 		
 		BukkitObjectInputStream ins = null;
 		try {
@@ -29,12 +33,18 @@ public class Idecode {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return im;
-
+		return im;*/
+		Map<String, Object> map = new HashMap<String, Object>();
+    	JSONObject jobj = JSONObject.fromObject(json);
+    	for (Object s : jobj.keySet()) {
+    		String str = s.toString();
+    		map.put(str, jobj.get(s));
+    	}
+    	return ItemStack.deserialize(map);
 	}
 	
 	public static String doZip(ItemStack item) {
-		ByteArrayOutputStream bop = new ByteArrayOutputStream();
+		/*ByteArrayOutputStream bop = new ByteArrayOutputStream();
 		try {
 			BukkitObjectOutputStream out = new BukkitObjectOutputStream(bop);
 			out.writeObject(item);
@@ -44,7 +54,10 @@ public class Idecode {
 		}
 
 		byte[] data = bop.toByteArray();
-		return Base64.getMimeEncoder().encodeToString(data);
+		return Base64.getMimeEncoder().encodeToString(data);*/
+		Map<String, Object> map = item.serialize();
+		JSONObject jobj = JSONObject.fromObject(map);
+		return jobj.toString();
 	}
 
 }

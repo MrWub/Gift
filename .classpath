@@ -7,5 +7,6 @@
 			<attribute name="javadoc_location" value="http://jd.bukkit.org/apidocs/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="F:/Downloads/json-lib-2.2.3-jdk15.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
