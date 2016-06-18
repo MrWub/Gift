@@ -46,6 +46,7 @@ public class Gift extends JavaPlugin {
 		Iresult result = sql.doSqlQuery("SELECT * FROM " + MyConfig.tableName);
 		for (int i = 1; i<=result.getRowCount(); i++) {
 			ArrayList<String> row = result.getRow(i);
+			System.out.println(row.get(2));
 			gifts.put(row.get(1), Idecode.redo(row.get(2)));
 		}
 	}
@@ -59,7 +60,7 @@ public class Gift extends JavaPlugin {
 									"/gift list 查看礼包列表 需要权限gift.admin",
 									"/gift get X 获取礼包X 需要权限gift.admin或gift.get.X",
 									"/gift del X 删除礼包X 需要权限gift.admin",
-									"/gift all-add X用你背包里的所有物品创建一个X礼包 需要权限gift.admin",
+									"/gift add X用你背包里的所有物品创建一个X礼包 需要权限gift.admin",
 									"/gift give X Y 给X玩家一个Y礼包 需要权限gift.admin"};
 					sender.sendMessage(strs);
 					return true;
@@ -74,9 +75,13 @@ public class Gift extends JavaPlugin {
 				}
 			} else 
 			if (args.length == 2) {
-				if (args[0].equals("all-add")) {
+				if (args[0].equals("add")) {
 					if (sender.hasPermission("gift.admin")) {
 						if (sender instanceof Player) {
+							if (gifts.containsKey(args[1])) {
+								sender.sendMessage("礼包已存在，请先删除");
+								return true;
+							}
 							Player p = (Player)sender;
 							List<ItemStack> tmp = new ArrayList<ItemStack>();
 							for (ItemStack item:p.getInventory()) {
